@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mongo/pages/add_page.dart';
+import 'package:mongo/pages/detail_page.dart';
+import 'package:mongo/pages/home_page.dart';
 import 'package:mongo/pages/splash_page.dart';
 import 'package:mongo/services/db_connection_service.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +21,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Mongo',
-        home: SplashPage(),
+        initialRoute: '/splash',
+        routes: {
+          '/': (context) => const HomePage(),
+          '/splash': (context) => SplashPage(),
+          '/detail': (context) => const DetailPage(),
+          '/add': (context) => const AddPage(),
+        },
       ),
     );
   }

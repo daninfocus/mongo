@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Coches {
   Coches({
     required this.coches,
@@ -26,7 +28,7 @@ class Coches {
 
 class Coche {
   Coche({
-    required this.id,
+    this.id,
     required this.make,
     required this.model,
     required this.year,
@@ -34,7 +36,7 @@ class Coche {
     required this.price,
   });
 
-  int id;
+  ObjectId? id;
   String make;
   String model;
   int year;
@@ -46,7 +48,7 @@ class Coche {
   String toJson() => json.encode(toMap());
 
   factory Coche.fromMap(Map<String, dynamic> json) => Coche(
-        id: json["id"].toInt(),
+        id: json["_id"],
         make: json["make"],
         model: json["model"],
         year: json["year"].toInt(),

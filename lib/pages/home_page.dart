@@ -1,122 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:mongo/provider/coche_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:avatar_glow/avatar_glow.dart';
 import '../model/coche.dart';
+import '../widgets/appbar_widget.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Consumer<CocheProvider>(
-      builder: (context, cocheProvider, child) {
-        return ListView.builder(
-          itemBuilder: (context, index) {
-            return tile(cocheProvider.allCoches[index], context);
-          },
-        );
-      },
-    ));
+    return Scaffold(
+      appBar: AppBarWidget(context, 'Mongo', false),
+      body: Consumer<CocheProvider>(
+        builder: (context, cocheProvider, child) {
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return tile(cocheProvider.allCoches[index], context);
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushReplacementNamed('/add');
+        },
+        child: const AvatarGlow(
+          glowColor: Colors.blue,
+          endRadius: 190.0,
+          duration: Duration(milliseconds: 2000),
+          repeat: true,
+          showTwoGlows: true,
+          repeatPauseDuration: Duration(milliseconds: 1100),
+          child: Material(
+            // Replace this child with your own
+            elevation: 8.0,
+            shape: CircleBorder(),
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              radius: 14.0,
+            ),
+          ),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+    );
   }
 
   Widget tile(Coche coche, BuildContext context) {
-    TextEditingController modeloController = TextEditingController();
-    TextEditingController makeController = TextEditingController();
-    TextEditingController yearController = TextEditingController();
-    TextEditingController colorController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
-
-    modeloController.text = coche.model;
-    makeController.text = coche.make;
-    yearController.text = coche.year.toString();
-    colorController.text = coche.color;
-    priceController.text = coche.price;
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(25),
-        child: ListTile(
-          title: Text(coche.make),
-          subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(coche.model),
-                Text(coche.year.toString()),
-                Text(coche.price)
-              ]),
-          leading: Icon(
-            Icons.car_repair_rounded,
-            color: HexColor(colorController.text),
+      child: Card(
+        shape: ShapeBorder.lerp(null, null, 90),
+        elevation: 5,
+        shadowColor: HexColor(coche.color),
+        child: GestureDetector(
+          onTap: () =>
+              Navigator.pushNamed(context, '/detail', arguments: coche),
+          child: ListTile(
+            style: ListTileStyle.drawer,
+            title: Text(coche.make),
+            subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(coche.model),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(coche.year.toString()),
+                      SizedBox(
+                        width: 30,
+                      ),
+                    ],
+                  )
+                ]),
+            trailing: Text(
+              coche.price,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            leading: Icon(
+              Icons.car_rental_outlined,
+              color: HexColor(coche.color),
+            ),
+            iconColor: Colors.black,
+            hoverColor: Colors.amberAccent,
+            horizontalTitleGap: 20.2,
+            shape: ShapeBorder.lerp(null, null, 20),
+            // tileColor: Colors.grey,
           ),
-          iconColor: Colors.black,
-          trailing: IconButton(
-            icon: Icon(Icons.edit),
-            color: Colors.black,
-            onPressed: () {
-              showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: 500,
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        TextField(
-                          controller: makeController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Make',
-                            alignLabelWithHint: true,
-                          ),
-                        ),
-                        TextField(
-                          controller: modeloController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Modelo',
-                            alignLabelWithHint: true,
-                          ),
-                        ),
-                        TextField(
-                          controller: yearController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Year',
-                            alignLabelWithHint: true,
-                          ),
-                        ),
-                        TextField(
-                          controller: colorController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Color',
-                            alignLabelWithHint: true,
-                          ),
-                          maxLength: 7,
-                        ),
-                        TextField(
-                          controller: priceController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Price',
-                            alignLabelWithHint: true,
-                          ),
-                        ),
-                        ElevatedButton(
-                          child: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        )
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          hoverColor: Colors.amberAccent,
-          tileColor: Colors.blueGrey,
         ),
       ),
     );
