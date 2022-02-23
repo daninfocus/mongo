@@ -51,9 +51,14 @@ class DBConnectionService {
     return finished;
   }
 
-  // Future<Map<String, dynamic>> findListAll() async {
-  //   await this.db;
-  //   print(db);
-
-  // }
+  Future<bool> deleteCar(Coche coche) async {
+    print(coche.id);
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
+    await db.open();
+    var collection = db.collection('coches');
+    bool finished = false;
+    await collection
+        .remove({'_id': coche.id}).whenComplete(() => finished = true);
+    return finished;
+  }
 }

@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mongo/provider/coche_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:avatar_glow/avatar_glow.dart';
@@ -13,42 +16,178 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController editingController = TextEditingController();
+  List<Coche> coches = [];
+  Icon customIcon = const Icon(
+    Icons.search,
+    color: Colors.black,
+  );
+  Widget customSearchBar = const Text(
+    'Wongo',
+    style: TextStyle(color: Colors.black),
+  );
+
   @override
   Widget build(BuildContext context) {
+    CocheProvider cocheProvider =
+        Provider.of<CocheProvider>(context, listen: false);
+
+    _filter(value) {
+      if (value.isNotEmpty) {
+        cocheProvider.sortCoches(value);
+      }
+    }
+
     return Scaffold(
-      appBar: AppBarWidget(context, 'Mongo', false),
+      appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark),
+        foregroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+            child: Container(
+              color: Color.fromARGB(144, 0, 237, 99),
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.sort_sharp),
+          onPressed: () {
+            final snackBar = SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      cocheProvider.sortAlphabetical();
+                    },
+                    icon: Icon(Icons.sort_by_alpha_rounded),
+                    color: Colors.white,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      cocheProvider.sortPrice();
+                    },
+                    icon: Icon(Icons.price_change_outlined),
+                    color: Colors.white,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      cocheProvider.sortYear();
+                    },
+                    icon: Icon(Icons.format_list_numbered_outlined),
+                    color: Colors.white,
+                  )
+                ],
+              ),
+              // action: SnackBarAction(
+              //   label: 'Undo',
+              //   onPressed: () {
+              //     // Some code to undo the change.
+              //   },
+              // ),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          },
+          color: Colors.black,
+        ),
+        title: customSearchBar,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                if (customIcon.icon == Icons.search) {
+                  customIcon = const Icon(
+                    Icons.cancel,
+                    color: Colors.black,
+                  );
+                  customSearchBar = ListTile(
+                    leading: Icon(
+                      Icons.search,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      size: 28,
+                    ),
+                    title: TextField(
+                      controller: editingController,
+                      onChanged: _filter,
+                      decoration: InputDecoration(
+                        hintText: 'Introduce una marca de coche...',
+                        hintStyle: TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  );
+                } else {
+                  customIcon = const Icon(
+                    Icons.search,
+                    color: Colors.black,
+                  );
+                  customSearchBar = const Text(
+                    'Wongo',
+                    style: TextStyle(color: Colors.black),
+                  );
+                }
+              });
+            },
+            icon: customIcon,
+          )
+        ],
+        centerTitle: true,
+      ),
       body: Consumer<CocheProvider>(
         builder: (context, cocheProvider, child) {
+          coches = cocheProvider.allCoches;
           return ListView.builder(
             itemBuilder: (context, index) {
-              return tile(cocheProvider.allCoches[index], context);
+              return Dismissible(
+                  background: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Container(
+                      color: Colors.red,
+                    ),
+                  ),
+                  key: UniqueKey(),
+                  onDismissed: (DismissDirection direction) {
+                    if (direction == DismissDirection.startToEnd) {
+                      setState(() {
+                        coches.removeAt(index);
+                        cocheProvider.removeCoche(coches[index]);
+                      });
+                    }
+                  },
+                  child: tile(coches[index], context));
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushReplacementNamed('/add');
+          Navigator.of(context).pushNamed('/add');
         },
-        child: const AvatarGlow(
-          glowColor: Colors.blue,
-          endRadius: 190.0,
-          duration: Duration(milliseconds: 2000),
-          repeat: true,
-          showTwoGlows: true,
-          repeatPauseDuration: Duration(milliseconds: 1100),
-          child: Material(
-            // Replace this child with your own
-            elevation: 8.0,
-            shape: CircleBorder(),
-            child: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
-              ),
-              radius: 14.0,
+        child: Material(
+          // Replace this child with your own
+          elevation: 8.0,
+          shape: CircleBorder(),
+          child: CircleAvatar(
+            backgroundColor: Color.fromARGB(255, 0, 237, 100),
+            child: Icon(
+              Icons.add,
+              color: Colors.black,
             ),
+            radius: 24.0,
           ),
         ),
         elevation: 0,
