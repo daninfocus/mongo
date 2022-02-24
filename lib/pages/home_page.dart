@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController editingController = TextEditingController();
-  List<Coche> coches = [];
+
   Icon customIcon = const Icon(
     Icons.search,
     color: Colors.black,
@@ -149,26 +149,38 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Consumer<CocheProvider>(
         builder: (context, cocheProvider, child) {
-          coches = cocheProvider.allCoches;
           return ListView.builder(
             itemBuilder: (context, index) {
               return Dismissible(
                   background: Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
                     child: Container(
+                      child: Icon(Icons.delete_outline_rounded,
+                          color: Colors.white),
+                      alignment: Alignment.centerLeft,
+                      color: Color.fromARGB(255, 1, 255, 22),
+                      padding: EdgeInsets.only(left: 10),
+                    ),
+                  ),
+                  secondaryBackground: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Container(
+                      child: Icon(Icons.delete_outline_rounded,
+                          color: Colors.white),
+                      alignment: Alignment.centerRight,
                       color: Colors.red,
+                      padding: EdgeInsets.only(right: 10),
                     ),
                   ),
                   key: UniqueKey(),
-                  onDismissed: (DismissDirection direction) {
-                    if (direction == DismissDirection.startToEnd) {
-                      setState(() {
-                        coches.removeAt(index);
-                        cocheProvider.removeCoche(coches[index]);
-                      });
-                    }
+                  onDismissed: (DismissDirection direction) async {
+                    cocheProvider.allCoches.removeAt(index);
+                    print(index);
+                    print(cocheProvider.allCoches[index].id);
+                    await cocheProvider
+                        .deleteCoche(cocheProvider.allCoches[index]);
                   },
-                  child: tile(coches[index], context));
+                  child: tile(cocheProvider.allCoches[index], context));
             },
           );
         },

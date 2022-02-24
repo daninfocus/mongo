@@ -53,10 +53,6 @@ class CocheProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  removeCoche(coche) {
-    deleteCoche(coche);
-  }
-
   Future<List<Coche>> setAllCoches() async {
     _allCoches = await _dbConnectionService.getAllCoches();
     _ogCoches = _allCoches;
@@ -78,7 +74,6 @@ class CocheProvider extends ChangeNotifier {
 
   Future<bool> deleteCoche(Coche coche) async {
     bool finished = await _dbConnectionService.deleteCar(coche);
-    setAllCoches();
     return finished;
   }
 }

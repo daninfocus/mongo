@@ -14,7 +14,6 @@ class SplashPage extends StatelessWidget {
       body: FutureBuilder(
         future: cocheProvider.setAllCoches(),
         builder: (context, AsyncSnapshot<List<Coche>> snapshot) {
-          print(snapshot.data);
           if (snapshot.hasData) {
             return HomePage();
           } else {
