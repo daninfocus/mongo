@@ -34,7 +34,7 @@ class _DetailPageState extends State<DetailPage> {
     yearController.text = coche.year.toString();
     colorController.text = coche.color;
     circleController.color = HexColor(coche.color);
-    priceController.text = coche.price;
+    priceController.text = coche.price.substring(1);
 
     return Scaffold(
       appBar: AppBar(
@@ -73,6 +73,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 TextField(
                   controller: yearController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Año',
@@ -99,6 +100,7 @@ class _DetailPageState extends State<DetailPage> {
                   height: 15,
                 ),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: priceController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -119,7 +121,7 @@ class _DetailPageState extends State<DetailPage> {
                         year: int.parse(yearController.text),
                         color:
                             '#${appbarColor.value.toRadixString(16).substring(2)}',
-                        price: priceController.text);
+                        price: '\$' + priceController.text);
 
                     cocheProvider.updateCoche(modCoche);
                     Navigator.pop(context);

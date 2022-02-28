@@ -6,7 +6,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class DBConnectionService {
   Future<List<Coche>> getAllCoches() async {
-    var db = await Db.create("mongodb://localhost:27017/vehiculos");
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
     await db.open();
     var coll = await db.collection('coches').find().toList();
     List<Coche> coches = [];
@@ -17,8 +17,44 @@ class DBConnectionService {
     return coches;
   }
 
+  Future<List<Coche>> sortCochesByName() async {
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
+    await db.open();
+    var coll =
+        await db.collection('coches').find(where.sortBy('make')).toList();
+    List<Coche> coches = [];
+    coll.forEach((element) {
+      coches.add(Coche.fromMap(element));
+    });
+    return coches;
+  }
+
+  Future<List<Coche>> sortCochesByPrice() async {
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
+    await db.open();
+    var coll =
+        await db.collection('coches').find(where.sortBy('price')).toList();
+    List<Coche> coches = [];
+    coll.forEach((element) {
+      coches.add(Coche.fromMap(element));
+    });
+    return coches;
+  }
+
+  Future<List<Coche>> sortCochesByYear() async {
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
+    await db.open();
+    var coll =
+        await db.collection('coches').find(where.sortBy('year')).toList();
+    List<Coche> coches = [];
+    coll.forEach((element) {
+      coches.add(Coche.fromMap(element));
+    });
+    return coches;
+  }
+
   Future<bool> updateCar(ObjectId id, Coche coche) async {
-    var db = await Db.create("mongodb://localhost:27017/vehiculos");
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
     await db.open();
     var collection = db.collection('coches');
     ModifierBuilder modify = ModifierBuilder();
@@ -37,7 +73,7 @@ class DBConnectionService {
 
   Future<bool> addCar(Coche coche) async {
     //.find({}).sort({_id:-1}).limit(1);
-    var db = await Db.create("mongodb://localhost:27017/vehiculos");
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
     await db.open();
     var collection = db.collection('coches');
     bool finished = false;
@@ -53,16 +89,13 @@ class DBConnectionService {
   }
 
   Future<bool> deleteCar(Coche coche) async {
-    print(coche.id);
-    var db = await Db.create("mongodb://localhost:27017/vehiculos");
+    var db = await Db.create("mongodb://10.0.2.2:27017/vehiculos");
     await db.open();
     var collection = db.collection('coches');
     bool finished = false;
     final resp = await collection
         .deleteOne(where.eq('_id', coche.id))
         .whenComplete(() => finished = true);
-
-    print(resp.nRemoved);
 
     return finished;
   }

@@ -151,36 +151,24 @@ class _HomePageState extends State<HomePage> {
         builder: (context, cocheProvider, child) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              return Dismissible(
-                  background: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Container(
-                      child: Icon(Icons.delete_outline_rounded,
-                          color: Colors.white),
-                      alignment: Alignment.centerLeft,
-                      color: Color.fromARGB(255, 1, 255, 22),
-                      padding: EdgeInsets.only(left: 10),
-                    ),
+              return Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                        onPressed: () {
+                          cocheProvider
+                              .deleteCoche(cocheProvider.allCoches[index]);
+                        },
+                        icon: Icon(
+                          Icons.delete_forever_outlined,
+                          color: Colors.redAccent,
+                        )),
                   ),
-                  secondaryBackground: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Container(
-                      child: Icon(Icons.delete_outline_rounded,
-                          color: Colors.white),
-                      alignment: Alignment.centerRight,
-                      color: Colors.red,
-                      padding: EdgeInsets.only(right: 10),
-                    ),
-                  ),
-                  key: UniqueKey(),
-                  onDismissed: (DismissDirection direction) async {
-                    cocheProvider.allCoches.removeAt(index);
-                    print(index);
-                    print(cocheProvider.allCoches[index].id);
-                    await cocheProvider
-                        .deleteCoche(cocheProvider.allCoches[index]);
-                  },
-                  child: tile(cocheProvider.allCoches[index], context));
+                  Expanded(
+                      child: tile(cocheProvider.allCoches[index], context)),
+                ],
+              );
             },
           );
         },

@@ -38,24 +38,26 @@ class CocheProvider extends ChangeNotifier {
     allCoches = cochesFiltrado;
   }
 
-  sortAlphabetical() {
-    allCoches.sort(((a, b) => a.make.compareTo(b.make)));
+  sortAlphabetical() async {
+    _allCoches = await _dbConnectionService.sortCochesByName();
+    //allCoches.sort(((a, b) => a.make.compareTo(b.make)));
     notifyListeners();
   }
 
-  sortPrice() {
+  sortPrice() async {
+    _allCoches = await _dbConnectionService.sortCochesByPrice();
     allCoches.sort(((a, b) => a.price.compareTo(b.price)));
     notifyListeners();
   }
 
-  sortYear() {
-    allCoches.sort(((a, b) => a.year.compareTo(b.year)));
+  sortYear() async {
+    _allCoches = await _dbConnectionService.sortCochesByYear();
+    //allCoches.sort(((a, b) => a.year.compareTo(b.year)));
     notifyListeners();
   }
 
   Future<List<Coche>> setAllCoches() async {
     _allCoches = await _dbConnectionService.getAllCoches();
-    _ogCoches = _allCoches;
     notifyListeners();
     return _allCoches;
   }
@@ -72,8 +74,9 @@ class CocheProvider extends ChangeNotifier {
     return finished;
   }
 
-  Future<bool> deleteCoche(Coche coche) async {
-    bool finished = await _dbConnectionService.deleteCar(coche);
-    return finished;
+  Future<void> deleteCoche(Coche coche) async {
+    _allCoches.remove(coche);
+    await _dbConnectionService.deleteCar(coche);
+    notifyListeners();
   }
 }

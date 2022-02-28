@@ -15,6 +15,11 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   late Color appbarColor = Colors.black;
+  TextEditingController modeloController = TextEditingController();
+  TextEditingController makeController = TextEditingController();
+  TextEditingController yearController = TextEditingController();
+  TextEditingController colorController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     CocheProvider cocheProvider =
@@ -22,11 +27,6 @@ class _AddPageState extends State<AddPage> {
 
     appbarColor = appbarColor == Colors.black ? appbarColor : appbarColor;
 
-    TextEditingController modeloController = TextEditingController();
-    TextEditingController makeController = TextEditingController();
-    TextEditingController yearController = TextEditingController();
-    TextEditingController colorController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
     CircleColorPickerController circleController =
         CircleColorPickerController();
     circleController.color = Colors.black;
@@ -68,6 +68,7 @@ class _AddPageState extends State<AddPage> {
                 ),
                 TextField(
                   controller: yearController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Año',
@@ -94,8 +95,10 @@ class _AddPageState extends State<AddPage> {
                   height: 15,
                 ),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: priceController,
                   decoration: InputDecoration(
+                    icon: Icon(Icons.attach_money),
                     border: OutlineInputBorder(),
                     labelText: 'Precio',
                     alignLabelWithHint: true,
@@ -113,7 +116,7 @@ class _AddPageState extends State<AddPage> {
                         year: int.parse(yearController.text),
                         color:
                             '#${appbarColor.value.toRadixString(16).substring(2)}',
-                        price: priceController.text);
+                        price: '\$' + priceController.text);
                     cocheProvider.addCoche(newCoche);
                     Navigator.pop(context);
                   },
